@@ -1,0 +1,112 @@
+create table instructor(ID char(5),name varchar(20), dept_name varchar(20),salary numeric(8,2));
+
+
+insert into instructor values
+('10101','Srinivasan','Computer science',65000),('12121','100%wu','Computer science',90000),
+('15151','Moazart','Music',40000),('2222','Einstein','Physics',95000);
+
+
+select * from instructor;
+
+create table teaches(ID char(5),
+          course_id char(7), 
+          sec_id int,semester  char(7)not null,
+          year int,
+          primary key(course_id),
+          foreign key(ID) references instructor);
+          
+insert into teaches values('10101','cs-101',1,'fall',2009),
+                           ('10101','cs-315',1,'spring',2010),
+                           ('10101','cs-347',1,'fall',2009),
+                           ('12121','fin-201',1,'spring',2010);
+
+
+select *from teaches;
+
+
+
+update instructor set salary=case
+when salary<=65000 then salary *1.05
+else salary*1.03
+end;
+
+select salary from instructor;
+/*68250
+92700
+42000
+97850
+*/
+
+select * from instructor where not dept_name='Computer science';
+/*15151|Moazart|Music|42000
+2222|Einstein|Physics|97850
+*/
+
+select * from instructor where dept_name='Computer science' or dept_name='Physics';
+/*
+10101|Srinivasan|Computer science|68250
+12121|100%wu|Computer science|92700
+2222|Einstein|Physics|97850
+*/
+
+
+update teaches set sec_id='2' ,year=2011 where semester='spring';
+select * from teaches;
+/*10101|cs-101|1|fall|2009
+10101|cs-315|2|spring|2011
+10101|cs-347|1|fall|2009
+12121|fin-201|2|spring|2011
+*/
+
+
+select * from instructor where name like 'E%n';
+/*2222|Einstein|Physics|97850
+*/
+
+select *from instructor where dept_name not like 'C%';
+/*15151|Moazart|Music|42000
+2222|Einstein|Physics|97850
+*/
+
+select * from instructor where dept_name like '_h%';
+/*
+2222|Einstein|Physics|97850
+*/
+
+
+select * from instructor where dept_name in('Music','Physics');
+/*
+15151|Moazart|Music|42000
+2222|Einstein|Physics|97850
+*/
+
+
+select * from instructor where dept_name not in('Music','Physics');
+/*
+10101|Srinivasan|Computer science|68250
+12121|100%wu|Computer science|92700
+*/
+
+
+insert into teaches values('10501','cs-304',1,'fall',2009);
+select * from instructor i right join teaches t
+on i.id=t.id;
+/*# ID, name, dept_name, salary, ID, course_id, semester, year
+'10101', 'Srinivasan', 'Computer science', '65000.00', '10101', 'cs-101', 'fall', '2009'
+10101	Srinivasan	Computer science	65000.00	10101	cs-315	spring	2010
+10101	Srinivasan	Computer science	65000.00	10101	cs-347	fall	2009
+12121	Wu	       Finance	    90000.00	12121	fin-201	spring	2010
+null	null		null	      null      10501	cs-304	fall	2009
+*/
+
+
+select dept_name from instructor where dept_name <>'Computer science';
+/*Music
+Physics
+*/
+truncate table instructor;
+/*ID, name, dept_name, salary*/
+
+
+
+

@@ -1,0 +1,273 @@
+create table instructor(ID char(5),name varchar(20), dept_name varchar(20),salary numeric(8,2));
+
+
+insert into instructor values
+('10101','Srinivasan','Computer science',65000),('12121','100%wu','Computer science',90000),
+('15151','Moazart','Music',40000),('2222','Einstein','Physics',95000);
+
+
+select * from instructor;
+
+create table teaches(ID char(5),
+          course_id char(7), 
+          sec_id int,semester  char(7)not null,
+          year int,
+          primary key(course_id),
+          foreign key(ID) references instructor);
+          
+insert into teaches values('10101','cs-101',1,'fall',2009),
+                           ('10101','cs-315',1,'spring',2010),
+                           ('10101','cs-347',1,'fall',2009),
+                           ('12121','fin-201',1,'spring',2010);
+
+
+select *from teaches;
+
+select * from instructor left join teaches on instructor.id=teaches.id;
+
+/*
+10101|Srinivasan|Computer science|65000|10101|cs-101|1|fall|2009
+10101|Srinivasan|Computer science|65000|10101|cs-315|1|spring|2010
+10101|Srinivasan|Computer science|65000|10101|cs-347|1|fall|2009
+12121|100%Wu|Computer science|90000|12121|fin-201|1|spring|2010
+15151|Moazart|Music|40000|||||
+2222|Einstein|Physics|95000|||||
+*/
+
+select * from instructor i right join teaches t on i.id=t.id;
+
+
+
+select distinct T.name from instructor as T ,instructor as
+S where T.salary>S.salary and S.dept_name="Computer science";
+
+/*
+100%Wu
+Einstein
+*/
+
+
+select name from instructor where name like '%niva%';
+/*Srinivasan*/
+
+
+select name from instructor where name like '100\%';
+/*100%wu*/
+
+
+select name from instructor where name like '_______';
+/*Moazart*/
+
+
+select name from instructor where name like '_______%';
+/*Srinivasan
+Moazart
+Einstein
+*/
+
+select * from instructor order by dept_name desc ,salary; 
+/*2222|Einstein|Physics|95000
+15151|Moazart|Music|40000
+10101|Srinivasan|Computer science|65000
+12121|100%wu|Computer science|90000
+*/
+
+select * from instructor order by dept_name desc ,salary desc;
+/*2222|Einstein|Physics|95000
+15151|Moazart|Music|40000
+12121|100%wu|Computer science|90000
+10101|Srinivasan|Computer science|65000
+*/
+
+select name from instructor where salary between 60000 and 90000;
+/*
+Srinivasan
+100%wu
+*/
+
+select name from instructor where salary not between 60000 and 90000;
+/*
+Moazart
+Einstein
+*/
+
+/*select name,course_id from instructor as i,teaches as t 
+where(i.id ,dept_name)=(t.id ,"Computer science");
+*/
+
+select course_id from teaches where semester='fall' and year=2009 
+union
+select course_id from teaches where semester='spring' and year=2010 ; 
+
+/*
+cs-101
+cs-315
+cs-347
+fin-201
+*/
+
+
+select course_id from teaches where semester='fall' and year=2009 
+intersect
+select course_id from teaches where semester='spring' and year=2010 ; 
+
+/*null*/
+
+
+select course_id from teaches where semester='fall' and year=2009 
+except
+select course_id from teaches where semester='spring' and year=2010 ; 
+
+/*cs-101
+cs-347
+*/
+
+
+select i.salary from instructor i,instructor t where i.salary <t.salary;
+/*65000
+65000
+90000
+40000
+40000
+40000
+*/
+
+select salary from instructor; 
+/*65000
+90000
+40000
+95000
+*/
+
+select salary from instructor 
+except
+select i.salary from instructor i,instructor t where i.salary<t.salary;
+/*95000
+*/
+
+
+select  name from instructor where salary is not null;
+
+/*
+Srinivasan
+100%wu
+Moazart
+Einstein
+*/
+
+
+select name from instructor where salary is null;
+/*null*/
+
+
+select avg(salary) from instructor where dept_name='Computer science';
+/*77500.0
+*/
+
+select count(*) from teaches;
+/*4
+*/
+
+select dept_name,avg(salary) as avg_salary from instructor group by dept_name;
+/*Computer science|77500.0
+Music|40000.0
+Physics|95000.0
+*/
+
+select dept_name,avg(salary) from instructor  where dept_name='Computer science' 
+group by dept_name having avg(salary)>42000;
+/*
+Computer science|77500.0
+*/
+
+
+select dept_name,avg(salary) from instructor   
+group by dept_name having avg(salary)>42000;
+/*
+Computer science|77500.0
+Physics|95000.0
+*/
+
+select sum(salary) from instructor;
+/*290000*/
+
+
+
+insert into instructor values (4325,'sai','History',null);
+
+select * from instructor;
+/*
+10101|Srinivasan|Computer science|65000
+12121|100%wu|Computer science|90000
+15151|Moazart|Music|40000
+2222|Einstein|Physics|95000
+4325|sai|History|
+*/
+
+
+select sum(salary) from instructor;
+/*290000
+*/
+
+select course_id from teaches where semester='fall' and year =2009 
+and course_id
+in(select course_id from teaches where semester='spring'and year=2010);
+/*null*/
+
+select course_id from teaches where semester='fall' and year =2009 
+and course_id
+not in(select course_id from teaches where semester='spring'and year=2010);
+
+/*cs-101
+cs-347
+*/
+
+select name from instructor where salary 
+> some select salary from instructor where dept_name='Computer science';
+
+/*
+Wu
+Einstein*/
+
+select name from instructor where salary 
+> all select salary from instructor where dept_name='Computer science';
+/*
+Einstein*/
+
+select course_id from teaches as t where semester='fall' and year=2009
+and exists
+(select course_id from teaches as s where semester='spring' and year=2010 and t.course_id=s.course_id);
+
+/*null*/
+
+
+select id from instructor as i where
+unique(select course_id from teaches as t where i.id=t.id and t.year=2009);
+/*null*/
+
+delete from instructor where dept_name in (select dept_name from instructor where dept_name='History');
+select * from instructor;
+/*10101|Srinivasan|Computer science|65000
+12121|100%wu|Computer science|90000
+15151|Moazart|Music|40000
+2222|Einstein|Physics|95000
+*/
+
+insert into instructor values(4352,'sree','English',null);
+select * from instructor;
+/*10101|Srinivasan|Computer science|65000
+12121|100%wu|Computer science|90000
+15151|Moazart|Music|40000
+2222|Einstein|Physics|95000
+4352|sree|English|
+*/
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,219 @@
+create table instructor(ID char(5),name varchar(20), dept_name varchar(20),salary numeric(8,2));
+
+
+insert into instructor values('10101','Srinivasan','Computer science',65000),('12121','Wu','Finance',90000),('15151','Moazart','Music',40000),('2222','Einstein','Physics',95000);
+
+
+select * from instructor;
+
+/*
+10101|Srinivasan|Computer science|65000
+12121|Wu|Finance|90000
+15151|Moazart|Music|40000
+2222|Einstein|Physics|95000
+*/
+
+
+select length(id) from instructor;
+/*
+5
+5
+5
+4
+*/
+
+
+
+create table teaches(ID char(5),
+          course_id char(7), 
+          sec_id int,semester  char(7)not null,
+          year int,
+          primary key(course_id),
+          foreign key(ID) references instructor);
+          
+insert into teaches values('10101','cs-101',1,'fall',2009),
+                           ('10101','cs-315',1,'spring',2010),
+                           ('10101','cs-347',1,'fall',2009),
+                           ('12121','fin-201',1,'spring',2010);
+
+
+select *from teaches;
+
+/*
+10101|cs-101|1|fall|2009
+10101|cs-315|1|spring|2010
+10101|cs-347|1|fall|2009
+12121|fin-201|1|spring|2010
+
+*/
+
+
+
+
+delete from instructor where name="Wu";
+
+select * from instructor;
+
+
+
+/*
+10101|Srinivasan|Computer science|65000
+15151|Moazart|Music|40000
+2222|Einstein|Physics|95000
+
+*/
+
+
+
+alter table instructor add sno int;
+
+select * from instructor;
+
+/*
+10101|Srinivasan|Computer science|65000|
+15151|Moazart|Music|40000|
+2222|Einstein|Physics|95000|
+*/
+
+
+update instructor set sno=1 where id=10101;
+update instructor set sno=2 where id=12121;
+update instructor set sno=3 where id=15151;
+update instructor set sno=4 where id=2222;
+
+select * from instructor;
+
+
+/*
+10101|Srinivasan|Computer science|65000|1
+15151|Moazart|Music|40000|3
+2222|Einstein|Physics|95000|4
+*/
+
+
+alter table instructor rename to INSTRUCTOR_TABLE;
+
+select *from INSTRUCTOR_TABLE;
+
+/*
+10101|Srinivasan|Computer science|65000|1
+15151|Moazart|Music|40000|3
+2222|Einstein|Physics|95000|4
+*/
+
+select * from instructor;
+
+/*Error: near line 104: no such table: instructor
+*/
+
+alter table INSTRUCTOR_TABLE rename column sno to SERIAL_NO;
+
+
+select distinct ID from teaches;
+/*
+10101
+12121*/
+
+select all id from teaches;
+/*
+10101
+10101
+10101
+12121*/
+
+
+select '437'as FOO;
+/*  FOO
+  ---------
+   '437'
+*/
+
+select '437';
+/*
+  437
+ ------ 
+  437
+*/
+
+select 'A' from INSTRUCTOR_TABLE;
+/*
+A
+A
+A
+*/
+
+
+select ID,salary/12 as monthly_salary from INSTRUCTOR_TABLE;
+/*
+10101|5416
+15151|3333
+2222|7916
+*/
+
+
+select * from INSTRUCTOR_TABLE,teaches;
+/*
+10101|Srinivasan|Computer science|65000|1|10101|cs-101|1|fall|2009
+10101|Srinivasan|Computer science|65000|1|10101|cs-315|1|spring|2010
+10101|Srinivasan|Computer science|65000|1|10101|cs-347|1|fall|2009
+10101|Srinivasan|Computer science|65000|1|12121|fin-201|1|spring|2010
+15151|Moazart|Music|40000|3|10101|cs-101|1|fall|2009
+15151|Moazart|Music|40000|3|10101|cs-315|1|spring|2010
+15151|Moazart|Music|40000|3|10101|cs-347|1|fall|2009
+15151|Moazart|Music|40000|3|12121|fin-201|1|spring|2010
+2222|Einstein|Physics|95000|4|10101|cs-101|1|fall|2009
+2222|Einstein|Physics|95000|4|10101|cs-315|1|spring|2010
+2222|Einstein|Physics|95000|4|10101|cs-347|1|fall|2009
+2222|Einstein|Physics|95000|4|12121|fin-201|1|spring|2010
+
+*/
+
+select * from INSTRUCTOR_TABLE cross join teaches;
+/*
+10101|Srinivasan|Computer science|65000|1|10101|cs-101|1|fall|2009
+10101|Srinivasan|Computer science|65000|1|10101|cs-315|1|spring|2010
+10101|Srinivasan|Computer science|65000|1|10101|cs-347|1|fall|2009
+10101|Srinivasan|Computer science|65000|1|12121|fin-201|1|spring|2010
+15151|Moazart|Music|40000|3|10101|cs-101|1|fall|2009
+15151|Moazart|Music|40000|3|10101|cs-315|1|spring|2010
+15151|Moazart|Music|40000|3|10101|cs-347|1|fall|2009
+15151|Moazart|Music|40000|3|12121|fin-201|1|spring|2010
+2222|Einstein|Physics|95000|4|10101|cs-101|1|fall|2009
+2222|Einstein|Physics|95000|4|10101|cs-315|1|spring|2010
+2222|Einstein|Physics|95000|4|10101|cs-347|1|fall|2009
+2222|Einstein|Physics|95000|4|12121|fin-201|1|spring|2010*/
+
+EQUI JOIN
+select name,course_id from INSTRUCTOR_TABLE,teaches where INSTRUCTOR_TABLE.id=teaches.id;
+/*Srinivasan|cs-101
+Srinivasan|cs-315
+Srinivasan|cs-347
+*/
+
+(OR)
+select * from INSTRUCTOR_TABLE  join teaches on INSTRUCTOR_TABLE.id=teaches.id;
+/*
+10101|Srinivasan|Computer science|65000|1|10101|cs-101|1|fall|2009
+10101|Srinivasan|Computer science|65000|1|10101|cs-315|1|spring|2010
+10101|Srinivasan|Computer science|65000|1|10101|cs-347|1|fall|2009
+*/
+
+INNER JOIN
+select * from INSTRUCTOR_TABLE inner join teaches on INSTRUCTOR_TABLE.id=teaches.id;
+
+/*
+10101|Srinivasan|Computer science|65000|1|10101|cs-101|1|fall|2009
+10101|Srinivasan|Computer science|65000|1|10101|cs-315|1|spring|2010
+10101|Srinivasan|Computer science|65000|1|10101|cs-347|1|fall|2009
+*/
+
+
+NATURAL JOIN
+select * from INSTRUCTOR_TABLE natural join teaches ;
+
+
+/*
+10101|Srinivasan|Computer science|65000|1|cs-101|1|fall|2009
+10101|Srinivasan|Computer science|65000|1|cs-315|1|spring|2010
+10101|Srinivasan|Computer science|65000|1|cs-347|1|fall|2009
+*/

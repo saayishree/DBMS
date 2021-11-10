@@ -1,0 +1,87 @@
+
+create table instructor(ID char(5),name varchar(20), dept_name varchar(20),salary numeric(8,2));
+
+
+insert into instructor values('10101','Srinivasan','Computer science',65000),('12121','Wu','Finance',90000),('15151','Moazart','Music',40000),('2222','Einstein','Physics',95000);
+
+
+select * from instructor;
+
+
+
+
+
+
+
+create table teaches(ID char(5),
+          course_id char(7), 
+          sec_id int,semester  char(7)not null,
+          year int,
+          primary key(course_id),
+          foreign key(ID) references instructor);
+          
+insert into teaches values('10101','cs-101',1,'fall',2009),
+                           ('10101','cs-315',1,'spring',2010),
+                           ('10101','cs-347',1,'fall',2009),
+                           ('12121','fin-201',1,'spring',2010);
+
+create view faculty as 
+select id,name,dept_name from instructor;
+
+select *from faculty;
+/*10101|Srinivasan|Computer science
+12121|Wu|Finance
+15151|Moazart|Music
+2222|Einstein|Physics
+*/
+
+select name from faculty where dept_name='Computer science';
+/*
+Srinivasan
+*/
+
+create view course as
+select name,course_id from instructor i,teaches t
+where i.id=t.id;
+
+select * from course;
+/*Srinivasan|cs-101
+Srinivasan|cs-315
+Srinivasan|cs-347
+Wu|fin-201
+*/
+
+
+create view department_total(dept_name,sal_total) as select dept_name,sum(salary)
+from instructor group by dept_name;
+
+select * from department_total;
+
+/*
+Computer science	65000.00
+Finance	90000.00
+Music	40000.00
+Physics	95000.00*/
+
+
+create view new_faculty as select id,name
+from faculty ;
+select *from new_faculty;
+/*10101|Srinivasan
+12121|Wu
+15151|Moazart
+2222|Einstein
+*/
+
+
+
+
+insert into faculty values('10501','sai','English');
+select * from faculty;
+/*10101	Srinivasan	Computer science
+10501	sai	English
+12121	Wu	Finance
+15151	Moazart	Music
+2222	Einstein	Physics
+*/
+
