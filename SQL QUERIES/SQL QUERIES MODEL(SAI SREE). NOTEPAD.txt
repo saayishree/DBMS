@@ -1,0 +1,132 @@
+use sai;   /*Database sai*/
+
+/* Creating a table */
+
+CREATE TABLE SCHOOL (
+    CODE INT,
+    TEACHERNAME CHAR(30),
+    SUBJECT CHAR(30),
+    DOJ CHAR(30),
+    PERIODS INT,
+    EXPERIENCE INT
+);
+
+
+/* Inserting the values into the table*/
+insert into SCHOOL values(1001,'RAVI SHANKAR','ENGLISH','12-3-2000',24,10),
+(1009,'PRIYA RAI','PHYSICS','3-9-1998',26,12 ),
+(1203,'LISA ANAND','ENGLISH','9-4-2000',27,5 ),
+( 1045,'YASH RAJ','MATHS','24-8-2000',24,14),
+( 1123,'GANAN','PHYSICS','16-7-1999',28,3),
+( 1167,'HARISH','CHEMISTRY','19-10-1999',27,5),
+( 1215,'UMESH','PHYSICS','11-5-1998',22,15);
+
+
+
+/* Display all the values from the table*/
+select *from SCHOOL;
+
+
+/* creating a table */
+create table ADMIN(CODE int,GENDER char(20),DESIGNATION char(30));
+
+
+/* Inserting values into the table*/
+insert into ADMIN values(1001,'MALE','VICE PRINCIPAL'),
+( 1009,'FEMALE','COORDINATOR'),
+( 1203,'FEMALE','COORDINATOR'),
+( 1045,'MALE','HOD'),
+( 1123,'MALE','SENIOR TEACHER'),
+( 1167,'MALE','SENIOR TEACHER'),
+( 1215,'MALE','HOD'); 
+
+
+/* Display all the values from the table*/
+select * from ADMIN;
+
+
+/* To display TEACHERNAME,PERIODS of all the teachers 
+whose PERIODS are less than 25 and name starts with either R or U*/
+
+select TEACHERNAME,PERIODS from SCHOOL where PERIODS<25
+ and TEACHERNAME like "R%" or "U%";
+
+
+/*Display all from table SCHOOL from where period is between 10 & 20 */
+select * from SCHOOL where PERIODS between 10 and 20;
+
+
+/*Display TEACHERNAME,CODE and DESIGNATION from tables SCHOOL & ADMIN 
+for Female teacher */
+select TEACHERNAME,SCHOOL.CODE,DESIGNATION from SCHOOL,ADMIN 
+where SCHOOL.CODE=ADMIN.CODE and GENDER="FEMALE"; 
+
+
+/*To display maximum of EXPERIENCE for each SUBJECT */
+select max(EXPERIENCE),SUBJECT from SCHOOL group by SUBJECT;
+
+
+
+/*Display DESIGNATION along with the count
+ for each DESIGNATION with count less than 3  */
+ select DESIGNATION,count(*) from ADMIN group by DESIGNATION
+ having count(*)<3;
+
+
+/* Display all the subjects handled by female teachers.*/
+select SUBJECT from SCHOOL where CODE in
+( select CODE from ADMIN where GENDER="FEMALE");
+
+
+/*Display name of the teachers 
+and code having code less than 1150 using "not in" construct*/
+select TEACHERNAME,CODE from SCHOOL where CODE 
+not in ( select CODE from ADMIN where CODE>1150);
+
+
+/* union : combines all the tuples from both the tables*/
+select CODE from SCHOOL  union  select CODE  from ADMIN;
+
+/* union all : the common entities are included twice */
+select CODE from SCHOOL union all select CODE from ADMIN;
+
+/* ALTER COMMAND : TO RENAME A TABLE */
+alter table ADMIN rename to AD;
+select * from AD;
+
+
+/* renaming a column using alter command */
+alter table AD rename column DESIGNATION to DES;
+select * from AD;
+
+
+/* INNER JOIN  or JOIN: it combines all the tuples from both the tables 
+where the condition satisfies */
+select SCHOOL.CODE,TEACHERNAME,DOJ,EXPERIENCE,
+AD.CODE,AD.GENDER,AD.DES from SCHOOL INNER JOIN AD on SCHOOL.CODE=AD.CODE;
+ 
+ 
+ /*To find the average of experience */
+ select avg(EXPERIENCE) from SCHOOL; 
+ 
+ 
+ /*To display the number of tuples*/
+ select count(*) from SCHOOL;
+ 
+ 
+
+
+/* to display the distinct subject */
+select distinct(SUBJECT) from SCHOOL;
+
+
+/* to display the distinct number of subjects*/
+select count(distinct(SUBJECT)) from SCHOOL;
+
+
+
+
+
+/* Drop command */
+drop table SCHOOL;
+
